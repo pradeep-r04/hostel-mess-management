@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <link rel="icon" href="logo.png" type="image/icon type">
+  <style>
+    /* Full-page background with blur */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url(bg.jpg) no-repeat center center/cover;
+}
+
+/* This rule applies the blur */
+/* Existing rule that applies the blur */
+body::before {
+  content:none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); /* dark overlay */
+  backdrop-filter: blur(2px); /* blur effect */
+  z-index: 0;
+}
+
+/* The new rule that removes the blur */
+body.no-blur::before {
+  backdrop-filter: none;
+  background: transparent; /* Makes the dark overlay transparent */
+}
+
+/* Login form container */
+form {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 320px;
+  backdrop-filter: blur(12px);  /* glassmorphism effect */
+}
+#ordersHeader {
+  color: rgb(1, 1, 1); /* Or whatever color you prefer */
+  text-align: center;
+  margin-top: 40px;
+}
+
+
+/* Center container */
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Heading */
+.login-container h2 {
+  color: rgb(249, 249, 249);
+  margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+
+/* Inputs */
+form input {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Button */
+form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #ff004f;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background: #e60045;
+}
+
+/* Orders section (hidden initially) */
+
+
+#ordersTable {
+  width: 90%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  display: none;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#ordersTable th, 
+#ordersTable td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: center;
+}
+
+#ordersTable th {
+  background: #222;
+  color: #fff;
+}
+
+#ordersTable tr:nth-child(even) {
+  background: #f2f2f2;
+}
+
+  </style>
+</head>
+<body>
+ <div class="login-container">
+  <h2>Admin Login</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+
+  <h2 style="margin-top:40px; display:none;" id="ordersHeader">Mess Orders</h2>
+  <table id="ordersTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Enrollment No</th>
+        <th>Mess ID</th>
+        <th>Chapati</th>
+        <th>Rice</th>
+        <th>Dal</th>
+        <th>Paneer</th>
+        <th>Order Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+const form = document.getElementById("loginForm");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault(); // prevent page refresh
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    const res = await fetch("http://localhost:5000/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // Hide entire login container
+      document.querySelector(".login-container").style.display = "none"; // Corrected line
+
+      // Remove background image safely
+      document.body.style.background = "#f9f9f9"; // plain white
+      document.body.style.display = "block";      // keep layout intact
+      document.body.style.height = "auto";
+
+      // Show Mess Orders header and center it
+      const ordersHeader = document.getElementById("ordersHeader");
+      ordersHeader.style.display = "block";
+      ordersHeader.style.textAlign = "center";
+      ordersHeader.style.marginTop = "40px";
+
+      // Show table
+      document.getElementById("ordersTable").style.display = "table";
+
+      // Populate table
+      loadOrders();
+    } else {
+      alert(data.message || "Invalid login!");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server. Make sure your backend is running at http://localhost:5000");
+  }
+
+});
+
+
+
+    async function loadOrders() {
+      const res = await fetch("http://localhost:5000/admin/orders");
+      const data = await res.json();
+      const tbody = document.querySelector("#ordersTable tbody");
+      tbody.innerHTML = "";
+
+      data.forEach(order => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${order.id}</td>
+          <td>${order.name}</td>
+          <td>${order.enrollment_no}</td>
+          <td>${order.mess_id}</td>
+          <td>${order.food_items.chapati}</td>
+          <td>${order.food_items.rice}</td>
+          <td>${order.food_items.dal}</td>
+          <td>${order.food_items.paneer}</td>
+          <td>${new Date(order.order_time).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>

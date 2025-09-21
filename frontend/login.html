@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login</title>
+<link rel="icon" href="logo.png" type="image/icon type">
+</head>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url(bg.jpg) no-repeat center center/cover;
+  backdrop-filter: blur(5px);
+}
+form {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 320px;
+  backdrop-filter: blur(12px);  /* glassmorphism effect */
+}
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Heading */
+.login-container h2 {
+  color: rgba(0, 14, 14, 0.912);
+  margin-bottom: 10px;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+
+/* Inputs */
+form input {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Button */
+form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #ff004f;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background:#ff004f;
+color:#1f242d;
+box-shadow:0 0 20px #ff004f;	
+}
+
+</style>
+<body>
+  <div class="login-container">
+  <h2>Student/Faculty Login</h2>
+  <form id="loginForm">
+    <input type="text" name="enrollment_no" placeholder="Enrollment No"><br>
+    <input type="text" name="name" placeholder="Name"><br>
+    <input type="password" name="password" placeholder="Password"><br>
+    <button type="submit">Login</button>
+  </form>
+  </div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async(e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  let res = await fetch("http://localhost:5000/auth/login", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(data)
+  });
+  let msg = await res.json();
+  if(msg.user){
+    localStorage.setItem("user", JSON.stringify(msg.user));
+    location.href="food.html";
+  } else {
+    alert(msg.error);
+  }
+});
+</script>
+</body>
+</html>

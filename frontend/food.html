@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Selection</title>
+  <link rel="icon" href="logo.png" type="image/icon type">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url(bg.jpg) no-repeat center center/cover;
+    backdrop-filter: blur(5px);
+  }
+  form {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 350px;
+    backdrop-filter: blur(12px);
+  }
+  .login-container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  .login-container h2 {
+    color: rgba(0, 14, 14, 0.912);
+    margin-bottom: 10px;
+    font-size: 26px;
+    font-weight: bold;
+  }
+  form input, form select {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+  }
+  form button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #ff004f;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  form button:hover {
+    background:#ff004f;
+    color:#1f242d;
+    box-shadow:0 0 20px #ff004f;	
+  }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Choose Your Food</h2>
+    <form id="foodForm">
+      <!-- Day selection -->
+      <label for="day">Day:</label>
+      <input type="date" id="day" name="day" required>
+
+      <!-- Meal type selection -->
+      <label for="meal">Meal Type:</label>
+      <select id="meal" name="meal" required>
+        <option value="">--Select Meal--</option>
+        <option value="breakfast">Breakfast</option>
+        <option value="lunch">Lunch</option>
+        <option value="snacks">Snacks</option>
+        <option value="dinner">Dinner</option>
+      </select>
+
+      <!-- Menu items (dynamic) -->
+      <div id="menuItems"></div>
+
+      <button type="submit">Show QR</button>
+    </form>
+  </div>
+  <div id="qrcode"></div>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+
+// Pre-decided menu (example weekly plan)
+const weeklyMenu = {
+  monday: {
+    breakfast: ["Poha", "Tea", "Banana"],
+    lunch: ["Chapati", "Rice", "Dal", "Paneer"],
+    snacks: ["Samosa", "Tea"],
+    dinner: ["Chapati", "Rice", "Dal", "Chicken Curry"]
+  },
+  sunday: {
+    breakfast: ["Upma", "Milk", "Apple"],
+    lunch: ["Chapati", "Rajma", "Rice", "Salad"],
+    snacks: ["Pakora", "Tea"],
+    dinner: ["Chapati", "Rice", "Dal", "Paneer Butter Masala"]
+  },
+  // add rest of days here...
+};
+
+// Auto-fill today’s date
+document.getElementById("day").valueAsDate = new Date();
+
+// Listen for meal change → show menu
+document.getElementById("meal").addEventListener("change", () => {
+  const dayInput = document.getElementById("day").value;
+  const dayName = new Date(dayInput).toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+  const mealType = document.getElementById("meal").value;
+
+  const menuDiv = document.getElementById("menuItems");
+  menuDiv.innerHTML = "";
+
+  if (weeklyMenu[dayName] && weeklyMenu[dayName][mealType]) {
+    weeklyMenu[dayName][mealType].forEach(item => {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = `${item}: <input type="number" name="${item}" value="0" min="0"><br>`;
+      menuDiv.appendChild(wrapper);
+    });
+  } else {
+    menuDiv.innerHTML = "<p>No menu defined for this selection.</p>";
+  }
+});
+
+// Form submission → save order
+document.getElementById("foodForm").addEventListener("submit", async(e)=>{
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
+
+  // Extract food items (skip day & meal)
+  const { day, meal, ...foodItems } = data;
+
+  let res = await fetch("http://localhost:5000/food/order", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ 
+      user_id: user.id, 
+      food_items: { day, meal, ...foodItems } 
+    })
+  });
+
+  let msg = await res.json();
+  document.getElementById("qrcode").innerHTML = `<img src="${msg.qr}"/>`;
+});
+</script>
+</body>
+</html>

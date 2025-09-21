@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head><title>Register</title>
+  <link rel="icon" href="logo.png" type="image/icon type">
+</head>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url(bg.jpg) no-repeat center center/cover;
+  backdrop-filter: blur(5px);
+}
+form {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+  backdrop-filter: blur(12px);  /* glassmorphism effect */
+}
+.login-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Heading */
+.login-container h2 {
+  color: rgba(0, 14, 14, 0.912);
+  margin-bottom: 8px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+
+/* Inputs */
+form input {
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Button */
+form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #ff004f;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+form button:hover {
+  background:#ff004f;
+color:#1f242d;
+box-shadow:0 0 20px #ff004f;	
+}
+
+</style>
+<body>
+  <div class = "login-container">
+  <h2>Register New User</h2>
+  <form id="regForm">
+    <input type="text" name="name" placeholder="Name"><br>
+    <input type="text" name="mobile" placeholder="Mobile"><br>
+    <input type="text" name="enrollment_no" placeholder="Enrollment No"><br>
+    <input type="text" name="faculty_id" placeholder="Faculty ID"><br>
+    <input type="text" name="mess_id" placeholder="Mess ID"><br>
+    <input type="text" name="course" placeholder="Course (optional)"><br>
+    <input type="password" name="password" placeholder="Password"><br>
+    <button type="submit">Register</button>
+  </form>
+</div>
+<script>
+document.getElementById("regForm").addEventListener("submit", async(e)=>{
+  e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target).entries());
+  let res = await fetch("http://localhost:5000/auth/register", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(data)
+  });
+  let msg = await res.json();
+  alert(msg.message);
+});
+</script>
+</body>
+</html>
