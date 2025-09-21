@@ -110,10 +110,26 @@ Admin
 ---
 
 ## 📷 Screenshots (Sample)
-Homepage – with banner, navigation, and login/register buttons  
-Food Selection – choose day, meal type, and quantities  
-QR Code – generated for student order  
-Admin Panel – table with all student/faculty orders   
+## Homepage – with banner, navigation, and login/register buttons  
+<img width="1919" height="1016" alt="Image" src="https://github.com/user-attachments/assets/068d4410-b263-4863-9290-a222abfb5f53" />  
+<img width="1919" height="1016" alt="Image" src="https://github.com/user-attachments/assets/d330a6a5-afaf-439a-9758-428cf4f12e36" />  
+<img width="1919" height="1015" alt="Image" src="https://github.com/user-attachments/assets/8a4c79e8-c83b-49fc-a362-587c7b675806" />  
+
+---
+## Food Selection – choose day, meal type, and quantities  
+<img width="1919" height="1016" alt="Image" src="https://github.com/user-attachments/assets/d5c46e3a-c441-4436-94d7-92ecd1e1357c" />  
+
+---
+## Student/Faculty Login  
+<img width="1919" height="1016" alt="Image" src="https://github.com/user-attachments/assets/f6f61376-785c-464d-8869-6a16ffbca7c3" />  
+
+---
+## Admin Login  
+<img width="1919" height="1015" alt="Image" src="https://github.com/user-attachments/assets/5f715d79-4600-4a01-8745-39ebb12cf457" />   
+
+---
+## Register New User   
+<img width="1919" height="1015" alt="Image" src="https://github.com/user-attachments/assets/4bd04397-bc97-44bd-a095-59edf16dffb0" />
 
 ---
 
