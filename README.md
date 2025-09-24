@@ -29,8 +29,8 @@ It allows **students/faculty** to register, log in, select food items based on t
 ---
 
 ## 🏗️ Project Structure
-Project/
-│
+Project/  
+|  
 ├── backend/ # Node.js backend  
 │ ├── app.js # Main server file  
 │ ├── db.js # Database connection  
